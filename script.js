@@ -13,7 +13,14 @@
   var reservationSummary = reservationConfirmation.querySelector('.reservation-summary');
   var reservationEdit = reservationConfirmation.querySelector('.reservation-edit');
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var portrait = window.matchMedia('(orientation: portrait)');
   var playbackTimer;
+
+  // The header is hidden during the intro on landscape screens, but stays visible and usable in portrait
+  function syncHeaderInert() {
+    headerInner.inert = document.body.classList.contains('hero-intro') && !portrait.matches;
+  }
+  portrait.addEventListener('change', syncHeaderInert);
 
   var reservationDate = reservationForm.elements.date;
   var today = new Date();
@@ -30,7 +37,7 @@
     hero.classList.add('is-finished');
     document.body.classList.remove('hero-intro');
     heroContent.inert = false;
-    headerInner.inert = false;
+    syncHeaderInert();
     heroReplay.hidden = false;
     window.requestAnimationFrame(function () {
       window.requestAnimationFrame(function () {
@@ -62,7 +69,7 @@
     hero.classList.add('is-loading');
     document.body.classList.add('hero-intro');
     heroContent.inert = true;
-    headerInner.inert = true;
+    syncHeaderInert();
     heroReplay.hidden = true;
     if (heroVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       startPlayback();
